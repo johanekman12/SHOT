@@ -19,6 +19,10 @@
 #include "Timing.h"
 #include "Utilities.h"
 
+#include "pybind11/pybind11.h"
+
+namespace py = pybind11;
+
 #ifdef HAS_GAMS
 #include "ModelingSystem/ModelingSystemGAMS.h"
 #endif
@@ -2011,3 +2015,8 @@ E_TerminationReason Solver::getTerminationReason() { return (env->results->termi
 
 E_ModelReturnStatus Solver::getModelReturnStatus() { return (env->results->getModelReturnStatus()); }
 } // namespace SHOT
+
+PYBIND11_MODULE(solver, m) {
+    m.doc() = "pybind11 example plugin"; // optional module docstring
+
+}
