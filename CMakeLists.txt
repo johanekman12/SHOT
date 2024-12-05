@@ -630,6 +630,23 @@ if(GENERATE_EXE)
     endif(HAS_GAMS)
 endif(GENERATE_EXE)
 
+
+# Python
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+include_directories(SYSTEM ${Python3_INCLUDE_DIRS})
+
+message(STATUS "Python_FOUND: ${Python_FOUND}")
+message(STATUS "Python3_FOUND: ${Python3_FOUND}")
+message(STATUS "Python3_INCLUDE_DIRS: ${Python3_INCLUDE_DIRS}")
+message(STATUS "Python_INCLUDE_DIRS: ${Python_INCLUDE_DIRS}")
+message(STATUS "Python3_LIBRARY_DIRS: ${Python3_LIBRARY_DIRS}")
+message(STATUS "Python_LIBRARY_DIRS: ${Python_LIBRARY_DIRS}")
+message(STATUS "Python3library: ${Python3library}")
+message(STATUS "Python_LIBRARIES ${Python_LIBRARIES}")
+message(STATUS "Python3_LIBRARIES ${Python3_LIBRARIES}")
+
+target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES})
+
 # Extra flags for Visual Studio compilers
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
