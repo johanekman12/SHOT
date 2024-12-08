@@ -8,6 +8,8 @@
    Please see the README and LICENSE files for more information.
 */
 
+#include <pybind11/pybind11.h>
+
 #include "Solver.h"
 
 #include "DualSolver.h"
@@ -18,10 +20,6 @@
 #include "TaskHandler.h"
 #include "Timing.h"
 #include "Utilities.h"
-
-#include "pybind11/pybind11.h"
-
-namespace py = pybind11;
 
 #ifdef HAS_GAMS
 #include "ModelingSystem/ModelingSystemGAMS.h"
@@ -2014,9 +2012,21 @@ std::vector<PrimalSolution> Solver::getPrimalSolutions() { return (env->results-
 E_TerminationReason Solver::getTerminationReason() { return (env->results->terminationReason); }
 
 E_ModelReturnStatus Solver::getModelReturnStatus() { return (env->results->getModelReturnStatus()); }
-} // namespace SHOT
 
-PYBIND11_MODULE(solver, m) {
+namespace py = pybind11;
+
+
+PYBIND11_MODULE(py_solver, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
+    std::cout << "test";
+
+    py::class_<Solver>(m, "Solver")
+    .def(py::init())
+    .def("setOptionsFromString", &Solver::setOptionsFromString);
 }
+
+} // namespace SHOT
+
+
+
