@@ -2019,14 +2019,11 @@ namespace py = pybind11;
 PYBIND11_MODULE(py_solver, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
-    std::cout << "test";
-
     py::class_<Solver>(m, "Solver")
     .def(py::init())
-    .def("setOptionsFromString", &Solver::setOptionsFromString);
+    .def("setLogFile", &Solver::setLogFile)
+    .def("setOptionsFromFile", &Solver::setOptionsFromFile)
+    ;
 }
 
 } // namespace SHOT
-
-
-
