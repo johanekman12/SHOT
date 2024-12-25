@@ -2013,17 +2013,115 @@ E_TerminationReason Solver::getTerminationReason() { return (env->results->termi
 
 E_ModelReturnStatus Solver::getModelReturnStatus() { return (env->results->getModelReturnStatus()); }
 
+
+
+
 namespace py = pybind11;
 
 
 PYBIND11_MODULE(py_solver, m) {
     m.doc() = "pybind11 example plugin"; // optional module docstring
 
+    // .def("func1", &func1)
+
     py::class_<Solver>(m, "Solver")
     .def(py::init())
     .def("setLogFile", &Solver::setLogFile)
-    .def("setOptionsFromFile", &Solver::setOptionsFromFile)
+
+
+    .def("setProblem", py::overload_cast<std::string>(&Solver::setProblem))
+
+
+    // .def("setProblem", py::overload_cast<const SHOT::ProblemPtr, const SHOT::ProblemPtr, const SHOT::ModelingSystemPtr>(&Solver::setProblem))
+
+
+
+    // .def("setProblem", &Solver::setProblem)
+
+
+    // .def("setProblem", &Solver<std::string>::setProblem)
+    // /home/linux/local/SHOT/src/Solver.cpp:2034:25: error: ‘SHOT::Solver’ is not a template
+    // 2034 |     .def("setProblem", &Solver<std::string>::setProblem)
+    //     |                         ^~~~~~
+    // /home/linux/local/SHOT/src/Solver.cpp:2034:9: error: no matching function for call to ‘pybind11::class_<SHOT::Solver>::def(const char [11], <unresolved overloaded function type>)’
+
+
+    // .def("setProblem", &Solver::setProblem<std::string>())
+    // /home/linux/local/SHOT/src/Solver.cpp: In function ‘void SHOT::pybind11_init_py_solver(pybind11::module_&)’:
+    // /home/linux/local/SHOT/src/Solver.cpp:2042:55: error: expected primary-expression before ‘>’ token
+    // 2042 |     .def("setProblem", &Solver::setProblem<std::string>())
+    //     |                                                       ^
+    // /home/linux/local/SHOT/src/Solver.cpp:2042:57: error: expected primary-expression before ‘)’ token
+    // 2042 |     .def("setProblem", &Solver::setProblem<std::string>())
+    //     |                                                         ^
+    // make[2]: *** [CMakeFiles/SHOTSolver.dir/build.make:104: CMakeFiles/SHOTSolver.dir/src/Solver.cpp.o] Error 1
+    // make[1]: *** [CMakeFiles/Makefile2:475: CMakeFiles/SHOTSolver.dir/all] Error 2
+
+
+    // .def("setProblem", &Solver::setProblem&<std::string>)
+    // /home/linux/local/SHOT/src/Solver.cpp: In function ‘void SHOT::pybind11_init_py_solver(pybind11::module_&)’:
+    // /home/linux/local/SHOT/src/Solver.cpp:2054:44: error: expected primary-expression before ‘<’ token
+    //  2054 |     .def("setProblem", &Solver::setProblem&<std::string>)
+    //       |                                            ^
+    // /home/linux/local/SHOT/src/Solver.cpp:2054:56: error: expected primary-expression before ‘>’ token
+    //  2054 |     .def("setProblem", &Solver::setProblem&<std::string>)
+    //       |                                                        ^
+    // /home/linux/local/SHOT/src/Solver.cpp:2054:57: error: expected primary-expression before ‘)’ token
+    //  2054 |     .def("setProblem", &Solver::setProblem&<std::string>)
+    //       |                                                         ^
+    // make[2]: *** [CMakeFiles/SHOTSolver.dir/build.make:104: CMakeFiles/SHOTSolver.dir/src/Solver.cpp.o] Error 1
+    // make[1]: *** [CMakeFiles/Makefile2:475: CMakeFiles/SHOTSolver.dir/all] Error 2
+
+
+    // .def("setProblem", &Solver::setProblem<const std::string &>)
+    // /home/linux/local/SHOT/src/Solver.cpp: In function ‘void SHOT::pybind11_init_py_solver(pybind11::module_&)’:
+    // /home/linux/local/SHOT/src/Solver.cpp:2069:44: error: expected primary-expression before ‘const’
+    // 2069 |     .def("setProblem", &Solver::setProblem<const std::string &>)
+    //     |                                            ^~~~~
+    // make[2]: *** [CMakeFiles/SHOTSolver.dir/build.make:104: CMakeFiles/SHOTSolver.dir/src/Solver.cpp.o] Error 1
+    // make[1]: *** [CMakeFiles/Makefile2:475: CMakeFiles/SHOTSolver.dir/all] Error 2
+
+    // .def("setProblem", &Solver::setProblem<const std::string>)
+    // /home/linux/local/SHOT/src/Solver.cpp: In function ‘void SHOT::pybind11_init_py_solver(pybind11::module_&)’:
+    // /home/linux/local/SHOT/src/Solver.cpp:2077:44: error: expected primary-expression before ‘const’
+    //  2077 |     .def("setProblem", &Solver::setProblem<const std::string>)
+    //       |                                            ^~~~~
+    // make[2]: *** [CMakeFiles/SHOTSolver.dir/build.make:104: CMakeFiles/SHOTSolver.dir/src/Solver.cpp.o] Error 1
+    // make[1]: *** [CMakeFiles/Makefile2:475: CMakeFiles/SHOTSolver.dir/all] Error 2
+
+
+    // .def("setProblem", py::overload_cast<std::string &>(&Solver::setProblem))
+    // /home/linux/local/SHOT/src/Solver.cpp: In function ‘void SHOT::pybind11_init_py_solver(pybind11::module_&)’:
+    // /home/linux/local/SHOT/src/Solver.cpp:2086:56: error: no match for call to ‘(const pybind11::detail::overload_cast_impl<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&>) (<unresolved overloaded function type>)’
+    // 2086 |     .def("setProblem", py::overload_cast<std::string &>(&Solver::setProblem))
+    //     |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~
+    // In file included from /home/linux/local/SHOT/ThirdParty/pybind11/include/pybind11/attr.h:13,
+    //                 from /home/linux/local/SHOT/ThirdParty/pybind11/include/pybind11/detail/class.h:12,
+    //                 from /home/linux/local/SHOT/ThirdParty/pybind11/include/pybind11/pybind11.h:12,
+    //                 from /home/linux/local/SHOT/src/Solver.cpp:11:
+    // /home/linux/local/SHOT/ThirdParty/pybind11/include/pybind11/detail/common.h:1126:20: note: candidate: ‘template<class Return> constexpr decltype (pf) pybind11::detail::overload_cast_impl<Args>::operator()(Return (*)(Args ...)) const [with Args = {std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&}]’
+    // 1126 |     constexpr auto operator()(Return (*pf)(Args...)) const noexcept -> decltype(pf) {
+
+
+
+
+    // .def("setProblem", static_cast<void (&Solver::*)(const std::string &)>(&Solver::setProblem))
+    // .def("setOptionsFromFile", &Solver::setOptionsFromFile)
     ;
+
+
+
 }
+
+
+//  .def("bar", py::overload_cast<const std::vector<double>&>(&Foo::bar, py::const_));
+
+// bool Solver::setProblem(std::string fileName)
+
+
+// bool Solver::setProblem(
+//     SHOT::ProblemPtr problem, SHOT::ProblemPtr reformulatedProblem, SHOT::ModelingSystemPtr modelingSystem)
+// {
+
 
 } // namespace SHOT
