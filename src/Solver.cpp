@@ -894,7 +894,7 @@ void Solver::initializeSettings()
 
     env->settings->createSettingGroup("Dual", "ReductionCut", "Dual reduction cut",
         "These settings control the added dual reduction cuts from the primal solution that will try to force a better "
-        "primal solution. This functionality is only used if SHOT cannot deduce that the problem is nonconvex .");
+        "primal solution. This functionality is only used if SHOT cannot deduce that the problem is convex .");
 
     env->settings->createSetting(
         "ReductionCut.Use", "Dual", true, "Enable the dual reduction cut strategy for nonconvex problems");
