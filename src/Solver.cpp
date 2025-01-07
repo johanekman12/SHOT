@@ -2031,6 +2031,7 @@ PYBIND11_MODULE(py_solver, m) {
 
     .def("setProblem", py::overload_cast<std::string>(&Solver::setProblem))
     .def("solveProblem", &Solver::solveProblem)
+    .def("getResultsOSrL", &Solver::getResultsOSrL)
 
     // .def("setProblem", py::overload_cast<const SHOT::ProblemPtr, const SHOT::ProblemPtr, const SHOT::ModelingSystemPtr>(&Solver::setProblem))
 
