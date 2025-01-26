@@ -66,6 +66,10 @@ set(CBC_DIR "/opt/Cbc-2.10" CACHE STRING "The base directory where Cbc is locate
 option(HAS_IPOPT "Is Ipopt available" OFF)
 set(IPOPT_DIR "/opt/ipopt" CACHE STRING "The base directory where Ipopt is located (if available).")
 
+# Python
+option(HAS_PYTHON "Is Python available" OFF)
+set(IPOPT_DIR "/opt/ipopt" CACHE STRING "The base directory where Ipopt is located (if available).")
+
 # Create also the executable
 option(GENERATE_EXE "Should the SHOT executable be generated (requires at least that either OS or GAMS is available)"
        ON)
@@ -636,21 +640,17 @@ if(GENERATE_EXE)
 endif(GENERATE_EXE)
 
 
-# Python
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-include_directories(SYSTEM ${Python3_INCLUDE_DIRS})
+if(HAS_PYTHON)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+    include_directories(SYSTEM ${Python3_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES})
+    message("-- The following Python libraries will be used from: ${Python3_LIBRARIES}")
+    message("   ${Python3_INCLUDE_DIRS}")
 
-message(STATUS "Python_FOUND: ${Python_FOUND}")
-message(STATUS "Python3_FOUND: ${Python3_FOUND}")
-message(STATUS "Python3_INCLUDE_DIRS: ${Python3_INCLUDE_DIRS}")
-message(STATUS "Python_INCLUDE_DIRS: ${Python_INCLUDE_DIRS}")
-message(STATUS "Python3_LIBRARY_DIRS: ${Python3_LIBRARY_DIRS}")
-message(STATUS "Python_LIBRARY_DIRS: ${Python_LIBRARY_DIRS}")
-message(STATUS "Python3library: ${Python3library}")
-message(STATUS "Python_LIBRARIES ${Python_LIBRARIES}")
-message(STATUS "Python3_LIBRARIES ${Python3_LIBRARIES}")
+# Is this needed?
+#    add_definitions(-DHAS_PYTHON)
 
-target_link_libraries(${PROJECT_NAME} ${Python3_LIBRARIES})
+endif(HAS_PYTHON)
 
 # Extra flags for Visual Studio compilers
 if(MSVC)
