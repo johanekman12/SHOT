@@ -181,10 +181,18 @@ bool Solver::setOptionsFromOSoL(std::string options)
     return (status);
 }
 
+std::string Solver::getSettingsAsMarkup() { return (env->settings->getSettingsAsMarkup()); }
+
 bool Solver::setLogFile(std::string filename)
 {
     env->output->setFileSink(filename);
     return (true);
+}
+
+void Solver::updateLogLevels()
+{
+    env->output->setLogLevels(static_cast<E_LogLevel>(env->settings->getSetting<int>("Console.LogLevel", "Output")),
+        static_cast<E_LogLevel>(env->settings->getSetting<int>("File.LogLevel", "Output")));
 }
 
 bool Solver::setProblem(std::string fileName)
@@ -652,6 +660,8 @@ bool Solver::solveProblem()
     assert(solutionStrategy != nullptr); /* would be NULL if setProblem failed */
     isProblemSolved = solutionStrategy->solveProblem();
 
+    this->finalizeSolution();
+
     return (isProblemSolved);
 }
 
@@ -660,6 +670,11 @@ void Solver::finalizeSolution()
     if(env->modelingSystem)
         env->modelingSystem->finalizeSolution();
 }
+
+void Solver::outputSolverHeader() { env->report->outputSolverHeader(); }
+void Solver::outputOptionsReport() { env->report->outputOptionsReport(); }
+void Solver::outputProblemInstanceReport() { env->report->outputProblemInstanceReport(); }
+void Solver::outputSolutionReport() { env->report->outputSolutionReport(); }
 
 std::string Solver::getResultsOSrL() { return (env->results->getResultsOSrL()); }
 

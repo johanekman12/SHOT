@@ -16,6 +16,7 @@
 #include "Environment.h"
 #include "Enums.h"
 #include "EventHandler.h"
+#include "Settings.h"
 #include "Structs.h"
 
 #include "ModelingSystem/IModelingSystem.h"
@@ -42,6 +43,8 @@ private:
 
     bool selectStrategy();
 
+    void finalizeSolution();
+
     bool isProblemInitialized = false;
     bool isProblemSolved = false;
 
@@ -59,7 +62,10 @@ public:
     bool setOptionsFromString(std::string options);
     bool setOptionsFromOSoL(std::string options);
 
+    std::string getSettingsAsMarkup();
+
     bool setLogFile(std::string filename);
+    void updateLogLevels();
 
     bool setProblem(std::string fileName);
     bool setProblem(ProblemPtr problem, ProblemPtr reformulatedProblem, ModelingSystemPtr modelingSystem = nullptr);
@@ -73,7 +79,10 @@ public:
 
     bool solveProblem();
 
-    void finalizeSolution();
+    void outputSolverHeader();
+    void outputOptionsReport();
+    void outputProblemInstanceReport();
+    void outputSolutionReport();
 
     template <typename Callback> inline void registerCallback(const E_EventType& event, Callback&& callback)
     {
@@ -92,6 +101,11 @@ public:
     void updateSetting(std::string name, std::string category, double value);
     void updateSetting(std::string name, std::string category, bool value);
 
+    template <typename T> T getSetting(std::string name, std::string category)
+    {
+        return (env->settings->getSetting<T>(name, category));
+    }
+
     VectorString getSettingIdentifiers(E_SettingType type);
 
     double getCurrentDualBound();
@@ -102,6 +116,8 @@ public:
     bool hasPrimalSolution();
     PrimalSolution getPrimalSolution();
     std::vector<PrimalSolution> getPrimalSolutions();
+
+    SolutionStatistics getSetSolutionStatistics() { return env->solutionStatistics; };
 
     E_TerminationReason getTerminationReason();
     E_ModelReturnStatus getModelReturnStatus();
