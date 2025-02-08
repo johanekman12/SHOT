@@ -225,6 +225,10 @@ void DualSolver::addGeneratedHyperplane(const Hyperplane& hyperplane)
 
         env->results->solutionIsGlobal = false;
     }
+    else
+    {
+        env->output->outputInfo("        Convex HP added.");
+    }
 
     if(hasHyperplaneBeenAdded(genHyperplane.pointHash, genHyperplane.sourceConstraintIndex))
     {

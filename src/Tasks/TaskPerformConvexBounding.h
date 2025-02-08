@@ -19,11 +19,11 @@
 namespace SHOT
 {
 
-class TaskPerformDualBounding : public TaskBase
+class TaskPerformConvexBounding : public TaskBase
 {
 public:
-    TaskPerformDualBounding(EnvironmentPtr envPtr);
-    ~TaskPerformDualBounding() override;
+    TaskPerformConvexBounding(EnvironmentPtr envPtr);
+    ~TaskPerformConvexBounding() override;
 
     void run() override;
     std::string getType() override;
@@ -32,5 +32,6 @@ private:
     std::shared_ptr<TaskCreateMIPProblem> taskCreateMIPProblem;
     int lastNumberOfHyperplanesWithConvexSource = 0;
     int lastNumberOfHyperplanesWithNonconvexSource = 0;
+    int idleIterations = 0;
 };
 } // namespace SHOT

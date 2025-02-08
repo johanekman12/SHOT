@@ -8,7 +8,7 @@
    Please see the README and LICENSE files for more information.
 */
 
-#include "TaskPerformDualBounding.h"
+#include "TaskPerformConvexBounding.h"
 
 #include "../DualSolver.h"
 #include "../Output.h"
@@ -40,39 +40,47 @@
 namespace SHOT
 {
 
-TaskPerformDualBounding::TaskPerformDualBounding(EnvironmentPtr envPtr) : TaskBase(envPtr) { }
+TaskPerformConvexBounding::TaskPerformConvexBounding(EnvironmentPtr envPtr) : TaskBase(envPtr) { }
 
-TaskPerformDualBounding::~TaskPerformDualBounding() = default;
+TaskPerformConvexBounding::~TaskPerformConvexBounding() = default;
 
-void TaskPerformDualBounding::run()
+void TaskPerformConvexBounding::run()
 {
+    /*
+        if(env->solutionStatistics.numberOfHyperplanesWithConvexSource == 0)
+        {
+            env->output->outputInfo(
+                " Convex bounding not performed since no hyperplanes with convex source have been added.");
+            return;
+        }
 
-    if(env->solutionStatistics.numberOfHyperplanesWithConvexSource == 0)
+        if(env->solutionStatistics.numberOfHyperplanesWithNonconvexSource == 0)
+        {
+            env->output->outputInfo(
+                " Convex bounding not performed since no hyperplanes with nonconvex source have been added.");
+            return;
+        }
+
+        if(lastNumberOfHyperplanesWithNonconvexSource == env->solutionStatistics.numberOfHyperplanesWithNonconvexSource
+            && lastNumberOfHyperplanesWithConvexSource == env->solutionStatistics.numberOfHyperplanesWithConvexSource)
+        {
+            env->output->outputInfo(" Convex bounding not performed since no hyperplanes with both convex and nonconvex
+       " "source have been added."); return;
+        }*/
+
+    /*if(this->idleIterations < env->settings->getSetting<int>("ConvexBounding.IdleIterations", "Dual"))
     {
-        env->output->outputInfo(
-            " Dual bounding not performed since no hyperplanes with convex source have been added.");
+        this->idleIterations++;
+        env->output->outputInfo(" Convex bounding not performed since number of idle iterations has not been met.");
         return;
     }
 
-    if(env->solutionStatistics.numberOfHyperplanesWithNonconvexSource == 0)
-    {
-        env->output->outputInfo(
-            " Dual bounding not performed since no hyperplanes with nonconvex source have been added.");
-        return;
-    }
-
-    if(lastNumberOfHyperplanesWithNonconvexSource == env->solutionStatistics.numberOfHyperplanesWithNonconvexSource
-        && lastNumberOfHyperplanesWithConvexSource == env->solutionStatistics.numberOfHyperplanesWithConvexSource)
-    {
-        env->output->outputInfo(
-            " Dual bounding not performed since no hyperplanes with both convex and nonconvex source have been added.");
-        return;
-    }
+    this->idleIterations = 0;*/
 
     lastNumberOfHyperplanesWithConvexSource = env->solutionStatistics.numberOfHyperplanesWithConvexSource;
     lastNumberOfHyperplanesWithNonconvexSource = env->solutionStatistics.numberOfHyperplanesWithNonconvexSource;
 
-    env->output->outputInfo(" Performing dual bounding.");
+    env->output->outputInfo(" Performing convex bounding.");
 
     MIPSolverPtr MIPSolver;
 
@@ -102,7 +110,7 @@ void TaskPerformDualBounding::run()
     if(!MIPSolver->initializeProblem())
         throw Exception(" Cannot initialize selected MIP solver.");
 
-    env->output->outputInfo("  Creating dual bounding problem");
+    env->output->outputInfo("  Creating convex bounding problem");
 
     taskCreateMIPProblem = std::make_shared<TaskCreateMIPProblem>(env, MIPSolver, env->reformulatedProblem);
     taskCreateMIPProblem->run();
@@ -113,18 +121,25 @@ void TaskPerformDualBounding::run()
     {
         if(HP.isSourceConvex)
         {
+            env->output->outputInfo("Convex hyperplane added to convex bounding problem");
             if(MIPSolver->createHyperplane((Hyperplane)HP))
                 numberHyperplanesAdded++;
         }
     }
 
+    double currDual = env->results->getGlobalDualBound();
+
     env->output->outputInfo(fmt::format(
         "   Number of hyperplanes added: {}/{}", numberHyperplanesAdded, env->dualSolver->generatedHyperplanes.size()));
 
+    int iterationNumber = env->results->getCurrentIteration()->iterationNumber;
+
     if(env->settings->getSetting<bool>("Debug.Enable", "Output"))
     {
-        MIPSolver->writeProblemToFile(
-            env->settings->getSetting<std::string>("Debug.Path", "Output") + "/dualbounding_problem.lp");
+        auto filename = fmt::format("{}/convexbounding_problem{}.lp",
+            env->settings->getSetting<std::string>("Debug.Path", "Output"), iterationNumber - 1);
+
+        MIPSolver->writeProblemToFile(filename);
     }
 
     auto timeLim = env->settings->getSetting<double>("TimeLimit", "Termination") - env->timing->getElapsedTime("Total");
@@ -139,17 +154,15 @@ void TaskPerformDualBounding::run()
 
     MIPSolver->setSolutionLimit(2100000000);
 
-    env->output->outputInfo("  Dual bounding problem created");
+    env->output->outputInfo("  Convex bounding problem created");
     auto solutionStatus = MIPSolver->solveProblem();
 
     env->output->outputInfo(
-        fmt::format("        Dual bounding problem solved with return code: {}", (int)solutionStatus));
+        fmt::format("        Convex bounding problem solved with return code: {}", (int)solutionStatus));
 
     auto solutionPoints = MIPSolver->getAllVariableSolutions();
     double objectiveBound = MIPSolver->getDualObjectiveValue();
-    env->output->outputInfo(fmt::format("        Dual bounding problem objective bound: {}", objectiveBound));
-
-    int iterationNumber = env->results->getCurrentIteration()->iterationNumber;
+    env->output->outputInfo(fmt::format("        Convex bounding problem objective bound: {}", objectiveBound));
 
     if(solutionPoints.size() > 0)
     {
@@ -157,8 +170,10 @@ void TaskPerformDualBounding::run()
             fmt::format("        Number of solutions in solution pool: {} ", solutionPoints.size()));
 
         double objectiveValue = MIPSolver->getObjectiveValue();
+
         DualSolution sol = { solutionPoints.at(0).point, E_DualSolutionSource::ConvexBounding, objectiveValue,
             iterationNumber, false };
+
         env->dualSolver->addDualSolutionCandidate(sol);
 
         if(env->reformulatedProblem->antiEpigraphObjectiveVariable)
@@ -179,10 +194,13 @@ void TaskPerformDualBounding::run()
         env->dualSolver->addDualSolutionCandidate(sol);
     }
 
-    env->output->outputInfo(" Dual bounding finished.");
+    if(currDual != env->results->getGlobalDualBound())
+        env->output->outputInfo(" Convex bounding returned new global bound.");
+
+    env->output->outputInfo(" Convex bounding finished.");
 }
 
-std::string TaskPerformDualBounding::getType()
+std::string TaskPerformConvexBounding::getType()
 {
     std::string type = typeid(this).name();
     return (type);

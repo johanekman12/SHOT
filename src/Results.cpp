@@ -1156,7 +1156,6 @@ void Results::setDualBound(double value, bool forceGlobal)
 
     if(this->solutionIsGlobal || forceGlobal)
     {
-        env->output->outputInfo(fmt::format(" New dual bound: {} ", this->currentDualBound));
         this->globalDualBound = value;
         this->solutionIsGlobal = true;
     }

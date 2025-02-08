@@ -890,6 +890,21 @@ void Solver::initializeSettings()
     env->settings->createSetting(
         "MIP.UpdateObjectiveBounds", "Dual", false, "Update nonlinear objective variable bounds to primal/dual bounds");
 
+    // Convex bounding
+
+    env->settings->createSettingGroup("Dual", "ConvexBounding", "Convex Bounding",
+        "These settings control the convex bounding strategy that solves a MIP problem with all hyperplane cuts "
+        "generated for convex constraints so far and ignoring those generated for nonconvex constraints. This will "
+        "give a dual bound for the nonconvex problem.");
+
+    env->settings->createSetting(
+        "ConvexBounding.Use", "Dual", true, "Enable the convex bounding strategy for nonconvex problems");
+
+    env->settings->createSetting("ConvexBounding.IdleIterations", "Dual", 10,
+        "How often the convex bounding strategy should be executed. 0 = Every iteration with generated hyperplanes for "
+        "nonconvexities, 1 = Every second iteration, etc.",
+        0, SHOT_INT_MAX);
+
     // Primal settings: reduction cuts for nonconvex problems
 
     env->settings->createSettingGroup("Dual", "ReductionCut", "Dual reduction cut",
@@ -910,7 +925,7 @@ void Solver::initializeSettings()
     env->settings->createSetting("ReductionCut.Strategy", "Dual", static_cast<int>(reductionCutStrategy),
         "The reduction cut strategy to use", enumReductionCutStrategy,
         static_cast<int>(ES_ReductionCutStrategy::Fraction));
-    enumMIPSolver.clear();
+    enumReductionCutStrategy.clear();
 
     env->settings->createSetting("ReductionCut.MaxIterations", "Dual", 20,
         "Max number of primal cut reduction without primal improvement", 0, SHOT_INT_MAX);
