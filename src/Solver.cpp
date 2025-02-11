@@ -2081,7 +2081,9 @@ PYBIND11_MODULE(shotpy, m) {
     .def("getResultsOSrL", &Solver::getResultsOSrL)
     .def("getResultsSol", &Solver::getResultsSol)
     .def("getResultsTrace", &Solver::getResultsTrace)
-    
+
+    .def("getSetSolutionStatistics", &Solver::getSetSolutionStatistics)
+
     .def("getTerminationReason", &Solver::getTerminationReason)
     .def("hasPrimalSolution", &Solver::hasPrimalSolution)
 
@@ -2152,6 +2154,58 @@ PYBIND11_MODULE(shotpy, m) {
     .def_readwrite("integerRoundingPerformed", &PrimalSolution::integerRoundingPerformed) 
     .def_readwrite("displayed", &PrimalSolution::displayed) 
     ;
+
+
+
+    py::class_<SolutionStatistics>(m, "SolutionStatistics")
+    .def_readwrite("numberOfIterations", &SolutionStatistics::numberOfIterations)   
+    .def_readwrite("numberOfProblemsLP", &SolutionStatistics::numberOfProblemsLP)   
+    .def_readwrite("numberOfProblemsQP ", &SolutionStatistics::numberOfProblemsQP)
+    .def_readwrite("numberOfProblemsQCQP", &SolutionStatistics::numberOfProblemsQCQP)
+    .def_readwrite("numberOfProblemsFeasibleMILP", &SolutionStatistics::numberOfProblemsFeasibleMILP)
+    .def_readwrite("numberOfProblemsOptimalMILP", &SolutionStatistics::numberOfProblemsOptimalMILP)
+    .def_readwrite("numberOfProblemsFeasibleMIQP", &SolutionStatistics::numberOfProblemsFeasibleMIQP)
+    .def_readwrite("numberOfProblemsOptimalMIQP", &SolutionStatistics::numberOfProblemsOptimalMIQP)
+    .def_readwrite("numberOfProblemsFeasibleMIQCQP", &SolutionStatistics::numberOfProblemsFeasibleMIQCQP)
+    .def_readwrite("numberOfProblemsOptimalMIQCQP", &SolutionStatistics::numberOfProblemsOptimalMIQCQP)
+    .def_readwrite("numberOfFunctionEvalutions", &SolutionStatistics::numberOfFunctionEvalutions)
+    .def_readwrite("numberOfGradientEvaluations", &SolutionStatistics::numberOfGradientEvaluations)
+    .def_readwrite("numberOfProblemsMinimaxLP", &SolutionStatistics::numberOfProblemsMinimaxLP)
+    .def_readwrite("numberOfProblemsFixedNLP", &SolutionStatistics::numberOfProblemsFixedNLP)
+    .def_readwrite("numberOfConstraintsRemovedInPresolve", &SolutionStatistics::numberOfConstraintsRemovedInPresolve)
+    .def_readwrite("numberOfVariableBoundsTightenedInPresolve", &SolutionStatistics::numberOfVariableBoundsTightenedInPresolve)
+    .def_readwrite("numberOfHyperplanesWithConvexSource", &SolutionStatistics::numberOfHyperplanesWithConvexSource)
+    .def_readwrite("numberOfHyperplanesWithNonconvexSource", &SolutionStatistics::numberOfHyperplanesWithNonconvexSource)
+    .def_readwrite("numberOfIntegerCuts", &SolutionStatistics::numberOfIntegerCuts)
+    .def_readwrite("numberOfIterationsWithDualStagnation", &SolutionStatistics::numberOfIterationsWithDualStagnation)
+    .def_readwrite("lastIterationWithSignificantDualUpdate", &SolutionStatistics::lastIterationWithSignificantDualUpdate)
+    .def_readwrite("numberOfIterationsWithPrimalStagnation", &SolutionStatistics::numberOfIterationsWithPrimalStagnation)
+    .def_readwrite("lastIterationWithSignificantPrimalUpdate", &SolutionStatistics::lastIterationWithSignificantPrimalUpdate)
+    .def_readwrite("numberOfIterationsWithoutNLPCallMIP", &SolutionStatistics::numberOfIterationsWithoutNLPCallMIP)
+    .def_readwrite("iterationLastPrimalBoundUpdate", &SolutionStatistics::iterationLastPrimalBoundUpdate)
+    .def_readwrite("iterationLastDualBoundUpdate", &SolutionStatistics::iterationLastDualBoundUpdate)
+    .def_readwrite("iterationLastLazyAdded", &SolutionStatistics::iterationLastLazyAdded)
+    .def_readwrite("iterationLastDualCutAdded", &SolutionStatistics::iterationLastDualCutAdded)
+    .def_readwrite("timeLastDualBoundUpdate", &SolutionStatistics::timeLastDualBoundUpdate)
+    .def_readwrite("timeLastFixedNLPCall", &SolutionStatistics::timeLastFixedNLPCall)
+    .def_readwrite("numberOfOriginalInteriorPoints", &SolutionStatistics::numberOfOriginalInteriorPoints)
+    .def_readwrite("numberOfFoundPrimalSolutions", &SolutionStatistics::numberOfFoundPrimalSolutions)
+    .def_readwrite("numberOfExploredNodes", &SolutionStatistics::numberOfExploredNodes)
+    .def_readwrite("numberOfOpenNodes", &SolutionStatistics::numberOfOpenNodes)
+    .def_readwrite("numberOfPrimalReductionCutsUpdatesWithoutEffect", &SolutionStatistics::numberOfPrimalReductionCutsUpdatesWithoutEffect)
+    .def_readwrite("numberOfDualRepairsSinceLastPrimalUpdate", &SolutionStatistics::numberOfDualRepairsSinceLastPrimalUpdate)
+    .def_readwrite("numberOfPrimalReductionsPerformed", &SolutionStatistics::numberOfPrimalReductionsPerformed)
+    .def_readwrite("numberOfSuccessfulDualRepairsPerformed", &SolutionStatistics::numberOfSuccessfulDualRepairsPerformed)
+    .def_readwrite("numberOfUnsuccessfulDualRepairsPerformed", &SolutionStatistics::numberOfUnsuccessfulDualRepairsPerformed)
+    .def_readwrite("numberOfPrimalImprovementsAfterInfeasibilityRepair", &SolutionStatistics::numberOfPrimalImprovementsAfterInfeasibilityRepair)
+    .def_readwrite("numberOfPrimalImprovementsAfterReductionCut", &SolutionStatistics::numberOfPrimalImprovementsAfterReductionCut)
+    .def_readwrite("hasInfeasibilityRepairBeenPerformedSincePrimalImprovement", &SolutionStatistics::hasInfeasibilityRepairBeenPerformedSincePrimalImprovement)
+    .def_readwrite("hasReductionCutBeenAddedSincePrimalImprovement", &SolutionStatistics::hasReductionCutBeenAddedSincePrimalImprovement)
+    .def("getNumberOfTotalDualProblems", &SolutionStatistics::getNumberOfTotalDualProblems)
+    ;
+
+
+
 
 }
 
