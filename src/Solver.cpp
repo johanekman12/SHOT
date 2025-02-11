@@ -8,6 +8,9 @@
    Please see the README and LICENSE files for more information.
 */
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
 #include "Solver.h"
 
 #include "DualSolver.h"
@@ -2053,4 +2056,98 @@ std::vector<PrimalSolution> Solver::getPrimalSolutions() { return (env->results-
 E_TerminationReason Solver::getTerminationReason() { return (env->results->terminationReason); }
 
 E_ModelReturnStatus Solver::getModelReturnStatus() { return (env->results->getModelReturnStatus()); }
+
+
+
+namespace py = pybind11;
+
+
+PYBIND11_MODULE(shotpy, m) {
+    m.doc() = "pybind11 example plugin"; // optional module docstring
+
+    py::class_<Solver>(m, "Solver")
+    .def(py::init())
+    .def("finalizeSolution", &Solver::finalizeSolution)
+    .def("getAbsoluteObjectiveGap", &Solver::getAbsoluteObjectiveGap)
+    .def("getCurrentDualBound", &Solver::getCurrentDualBound)
+    .def("getModelReturnStatus", &Solver::getModelReturnStatus)
+    .def("getOptions", &Solver::getOptions)
+    .def("getOptionsOSoL", &Solver::getOptionsOSoL)
+
+    .def("getPrimalBound", &Solver::getPrimalBound)
+    .def("getPrimalSolution", &Solver::getPrimalSolution)
+    .def("getPrimalSolutions", &Solver::getPrimalSolutions)
+    .def("getRelativeObjectiveGap", &Solver::getRelativeObjectiveGap)
+    .def("getResultsOSrL", &Solver::getResultsOSrL)
+    .def("getResultsSol", &Solver::getResultsSol)
+    .def("getResultsTrace", &Solver::getResultsTrace)
+    
+    .def("getTerminationReason", &Solver::getTerminationReason)
+    .def("hasPrimalSolution", &Solver::hasPrimalSolution)
+    .def("setLogFile", &Solver::setLogFile)
+    .def("setOptionsFromFile", &Solver::setOptionsFromFile)
+    .def("setOptionsFromOSoL", &Solver::setOptionsFromOSoL)
+    .def("setOptionsFromString", &Solver::setOptionsFromString)
+    .def("setProblem", py::overload_cast<std::string>(&Solver::setProblem))
+    .def("solveProblem", &Solver::solveProblem)
+    ;
+
+    py::enum_<E_PrimalSolutionSource>(m, "E_PrimalSolutionSource", py::arithmetic())
+        .value("Rootsearch", E_PrimalSolutionSource::Rootsearch)
+        .value("RootsearchFixedIntegers", E_PrimalSolutionSource::RootsearchFixedIntegers)
+        .value("NLPFixedIntegers", E_PrimalSolutionSource::NLPFixedIntegers)
+        .value("NLPRelaxed", E_PrimalSolutionSource::NLPRelaxed)
+        .value("MIPSolutionPool", E_PrimalSolutionSource::MIPSolutionPool)
+        .value("LPFixedIntegers", E_PrimalSolutionSource::LPFixedIntegers)
+        .value("MIPCallback", E_PrimalSolutionSource::MIPCallback)
+        .value("InteriorPointSearch", E_PrimalSolutionSource::InteriorPointSearch)
+    ;
+
+    py::enum_<E_ModelReturnStatus>(m, "E_ModelReturnStatus", py::arithmetic())
+        .value("None", E_ModelReturnStatus::None)
+        .value("OptimalGlobal", E_ModelReturnStatus::OptimalGlobal)
+        .value("Unbounded", E_ModelReturnStatus::Unbounded)
+        .value("UnboundedNoSolution", E_ModelReturnStatus::UnboundedNoSolution)
+        .value("InfeasibleGlobal", E_ModelReturnStatus::InfeasibleGlobal)
+        .value("InfeasibleLocal", E_ModelReturnStatus::InfeasibleLocal)
+        .value("FeasibleSolution", E_ModelReturnStatus::FeasibleSolution)
+        .value("NoSolutionReturned", E_ModelReturnStatus::NoSolutionReturned)
+        .value("ErrorUnknown", E_ModelReturnStatus::ErrorUnknown)
+        .value("ErrorNoSolution", E_ModelReturnStatus::ErrorNoSolution)
+    ;
+
+    py::enum_<E_TerminationReason>(m, "E_TerminationReason", py::arithmetic())
+        .value("ConstraintTolerance", E_TerminationReason::ConstraintTolerance)
+        .value("ObjectiveStagnation", E_TerminationReason::ObjectiveStagnation)
+        .value("IterationLimit", E_TerminationReason::IterationLimit)
+        .value("TimeLimit", E_TerminationReason::TimeLimit)
+        .value("InfeasibleProblem", E_TerminationReason::InfeasibleProblem)
+        .value("UnboundedProblem", E_TerminationReason::UnboundedProblem)
+        .value("Error", E_TerminationReason::Error)
+        .value("AbsoluteGap", E_TerminationReason::AbsoluteGap)
+        .value("RelativeGap", E_TerminationReason::RelativeGap)
+        .value("UserAbort", E_TerminationReason::UserAbort)
+        .value("NoDualCutsAdded", E_TerminationReason::NoDualCutsAdded)
+        .value("None", E_TerminationReason::None)
+        .value("NumericIssues", E_TerminationReason::NumericIssues)
+    ;
+
+    py::class_<PrimalSolution>(m, "PrimalSolution")
+    .def_readwrite("point", &PrimalSolution::point)   
+    .def_readwrite("sourceType", &PrimalSolution::sourceType)
+    .def_readwrite("objValue", &PrimalSolution::objValue)    
+    .def_readwrite("iterFound", &PrimalSolution::iterFound)    
+    .def_readwrite("maxDevatingConstraintLinear", &PrimalSolution::maxDevatingConstraintLinear)    
+    .def_readwrite("maxDevatingConstraintQuadratic", &PrimalSolution::maxDevatingConstraintQuadratic)    
+    .def_readwrite("maxDevatingConstraintNonlinear", &PrimalSolution::maxDevatingConstraintNonlinear)    
+    .def_readwrite("maxIntegerToleranceError", &PrimalSolution::maxIntegerToleranceError)    
+    .def_readwrite("boundProjectionPerformed", &PrimalSolution::boundProjectionPerformed)    
+    .def_readwrite("integerRoundingPerformed", &PrimalSolution::integerRoundingPerformed) 
+    .def_readwrite("displayed", &PrimalSolution::displayed) 
+    ;
+
+}
+
+
+
 } // namespace SHOT
