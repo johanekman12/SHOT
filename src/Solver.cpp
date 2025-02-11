@@ -2084,12 +2084,19 @@ PYBIND11_MODULE(shotpy, m) {
     
     .def("getTerminationReason", &Solver::getTerminationReason)
     .def("hasPrimalSolution", &Solver::hasPrimalSolution)
+
+    .def("outputSolverHeader", &Solver::outputSolverHeader)
+    .def("outputOptionsReport", &Solver::outputOptionsReport)
+    .def("outputProblemInstanceReport", &Solver::outputProblemInstanceReport)
+    .def("outputSolutionReport", &Solver::outputSolutionReport)
+
     .def("setLogFile", &Solver::setLogFile)
     .def("setOptionsFromFile", &Solver::setOptionsFromFile)
     .def("setOptionsFromOSoL", &Solver::setOptionsFromOSoL)
     .def("setOptionsFromString", &Solver::setOptionsFromString)
     .def("setProblem", py::overload_cast<std::string>(&Solver::setProblem))
     .def("solveProblem", &Solver::solveProblem)
+    .def("updateLogLevels", &Solver::updateLogLevels)
     ;
 
     py::enum_<E_PrimalSolutionSource>(m, "E_PrimalSolutionSource", py::arithmetic())
