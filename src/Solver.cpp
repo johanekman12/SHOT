@@ -2098,6 +2098,10 @@ PYBIND11_MODULE(shotpy, m) {
     .def("setProblem", py::overload_cast<std::string>(&Solver::setProblem))
     .def("solveProblem", &Solver::solveProblem)
     .def("updateLogLevels", &Solver::updateLogLevels)
+    .def("updateSetting", py::overload_cast<std::string, std::string, int>(&Solver::updateSetting))
+    .def("updateSetting", py::overload_cast<std::string, std::string, std::string>(&Solver::updateSetting))
+    .def("updateSetting", py::overload_cast<std::string, std::string, double>(&Solver::updateSetting))
+    .def("updateSetting", py::overload_cast<std::string, std::string, bool>(&Solver::updateSetting))
     ;
 
     py::enum_<E_PrimalSolutionSource>(m, "E_PrimalSolutionSource", py::arithmetic())
