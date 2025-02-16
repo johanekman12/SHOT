@@ -2073,7 +2073,6 @@ PYBIND11_MODULE(shotpy, m) {
     .def("getModelReturnStatus", &Solver::getModelReturnStatus)
     .def("getOptions", &Solver::getOptions)
     .def("getOptionsOSoL", &Solver::getOptionsOSoL)
-
     .def("getPrimalBound", &Solver::getPrimalBound)
     .def("getPrimalSolution", &Solver::getPrimalSolution)
     .def("getPrimalSolutions", &Solver::getPrimalSolutions)
@@ -2083,7 +2082,8 @@ PYBIND11_MODULE(shotpy, m) {
     .def("getResultsTrace", &Solver::getResultsTrace)
 
     .def("getSetSolutionStatistics", &Solver::getSetSolutionStatistics)
-
+    .def("getSettingsAsMarkup", &Solver::getSettingsAsMarkup)
+    
     .def("getTerminationReason", &Solver::getTerminationReason)
     .def("hasPrimalSolution", &Solver::hasPrimalSolution)
 
