@@ -2067,7 +2067,6 @@ PYBIND11_MODULE(shotpy, m) {
 
     py::class_<Solver>(m, "Solver")
     .def(py::init())
-    .def("finalizeSolution", &Solver::finalizeSolution)
     .def("getAbsoluteObjectiveGap", &Solver::getAbsoluteObjectiveGap)
     .def("getCurrentDualBound", &Solver::getCurrentDualBound)
     .def("getModelReturnStatus", &Solver::getModelReturnStatus)
